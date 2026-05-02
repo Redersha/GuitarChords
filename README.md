@@ -2,14 +2,19 @@
 
 一个简单的吉他和弦展示网站，包含常见和弦图、描述和演奏提示。可直接部署到 GitHub Pages。
 
-## 本地预览
+**其他功能** :
+- 搜索和弦
+- 置顶和弦
+
+## 部署
+### 本地预览
 
 1. 打开 `index.html`。
 2. 或者使用静态服务器，例如：
    - `python3 -m http.server 8000`
    - 然后访问 `http://localhost:8000`
 
-## 部署到 GitHub Pages
+### 部署到 GitHub Pages
 
 1. 将仓库推送到 GitHub。
 2. 进入仓库设置 -> Pages。
