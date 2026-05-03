@@ -175,11 +175,88 @@ const chords = [
   }
 ];
 
-const chordGrid = document.getElementById("chordGrid");
+const moodProgressions = {
+  pop: {
+    title: "明亮流行",
+    description: "适合轻快节奏的流行、歌曲伴奏和清新旋律。",
+    progressions: [
+      { name: "经典流行", chords: ["Cmaj", "Gmaj", "Am", "Fmaj"] },
+      { name: "现代氛围", chords: ["Cmaj7", "Gadd9", "Am7", "Fmaj7"] },
+      { name: "开放明亮", chords: ["Gmaj", "Dmaj", "Em", "Cmaj"] }
+    ]
+  },
+  ballad: {
+    title: "抒情柔和",
+    description: "适合慢速民谣、情歌与温柔的指弹伴奏。",
+    progressions: [
+      { name: "温柔情感", chords: ["Am", "Fmaj", "Cmaj", "Gmaj"] },
+      { name: "宁静氛围", chords: ["Em", "Cmaj", "Gmaj", "Dmaj"] },
+      { name: "淡淡忧伤", chords: ["Dm", "Am", "Gmaj", "Cmaj"] }
+    ]
+  },
+  rock: {
+    title: "摇滚有力",
+    description: "适合激烈、能量十足的电吉他与编配。",
+    progressions: [
+      { name: "摇滚经典", chords: ["Emaj", "Amaj", "Bmaj", "Amaj"] },
+      { name: "动力节奏", chords: ["Gmaj", "Dmaj", "Em", "Cmaj"] },
+      { name: "强力推进", chords: ["F#m", "Dmaj", "Amaj", "Emaj"] }
+    ]
+  },
+  blues: {
+    title: "布鲁斯怀旧",
+    description: "适合布鲁斯八小节、蓝调与复古节奏。",
+    progressions: [
+      { name: "布鲁斯十二小节", chords: ["E7", "A7", "E7", "D7"] },
+      { name: "怀旧感觉", chords: ["E7", "A7", "D7", "G7"] },
+      { name: "经典布鲁斯", chords: ["A7", "D7", "E7", "A7"] }
+    ]
+  },
+  jazz: {
+    title: "爵士慵懒",
+    description: "适合酒吧氛围、慢节奏爵士与临场演奏。",
+    progressions: [
+      { name: "经典四和弦", chords: ["Cmaj7", "Dm7", "G7", "Cmaj7"] },
+      { name: "爵士走向", chords: ["Fmaj7", "Gmaj7", "Em7", "A7"] },
+      { name: "柔和循环", chords: ["Am7", "Dm7", "G7", "Cmaj7"] }
+    ]
+  },
+  dream: {
+    title: "梦幻空灵",
+    description: "适合梦幻电子、独立曲风和氛围音乐。",
+    progressions: [
+      { name: "空灵流动", chords: ["Cadd9", "Gadd9", "Em7", "Dmaj"] },
+      { name: "柔和律动", chords: ["Fmaj7", "Cmaj7", "Gmaj7", "Em7"] },
+      { name: "氛围展开", chords: ["Am", "Fmaj7", "Cmaj7", "Gadd9"] }
+    ]
+  },
+  sad: {
+    title: "悲伤深沉",
+    description: "适合忧郁、内省和影视配乐式的情绪。",
+    progressions: [
+      { name: "深沉悲伤", chords: ["Em", "Gmaj", "Dmaj", "Cmaj"] },
+      { name: "低吟诉说", chords: ["Am", "Fmaj", "Cmaj", "Gmaj"] },
+      { name: "淡淡离愁", chords: ["Dm", "Am", "Em", "Gmaj"] }
+    ]
+  },
+  summer: {
+    title: "夏日欢快",
+    description: "适合户外、节日与轻松派对场景。",
+    progressions: [
+      { name: "阳光律动", chords: ["Cmaj", "Gmaj", "Am", "Fmaj"] },
+      { name: "海滩节奏", chords: ["Gmaj", "Cmaj", "Dmaj", "Em"] },
+      { name: "轻快行走", chords: ["Dmaj", "Amaj", "Bm", "Gmaj"] }
+    ]
+  }
+};
+
+
 const pinnedGrid = document.getElementById("pinnedGrid");
 const pinnedSection = document.getElementById("pinnedSection");
 const clearPinnedBtn = document.getElementById("clearPinnedBtn");
 const searchInput = document.getElementById("searchInput");
+const moodSelect = document.getElementById("moodSelect");
+const progressionResults = document.getElementById("progressionResults");
 
 let pinnedChords = [];
 
@@ -229,6 +306,71 @@ function clearAllPinned() {
 
 function isPinned(chordName) {
   return pinnedChords.includes(chordName);
+}
+
+function getChordByName(name) {
+  return chords.find((chord) => chord.name === name);
+}
+
+function renderProgressionCard(progression) {
+  const card = document.createElement("div");
+  card.className = "prog-card";
+
+  const title = document.createElement("h3");
+  title.textContent = progression.name;
+  card.appendChild(title);
+
+  const description = document.createElement("p");
+  description.textContent = `和弦组合：${progression.chords.join(" → ")}`;
+  card.appendChild(description);
+
+  const chordContainer = document.createElement("div");
+  chordContainer.className = "chord-container";
+  progression.chords.forEach((name) => {
+    const chord = getChordByName(name);
+    const chordItem = document.createElement("div");
+    chordItem.className = "chord-item";
+    const nameSpan = document.createElement("strong");
+    nameSpan.textContent = chord.name;
+    chordItem.appendChild(nameSpan);
+    if (chord) {
+      const diagram = renderDiagram(chord.shape, chord.fingers);
+      chordItem.appendChild(diagram);
+    }
+    chordContainer.appendChild(chordItem);
+  });
+  card.appendChild(chordContainer);
+
+  return card;
+}
+
+function showMoodHint() {
+  progressionResults.innerHTML = "";
+  const hint = document.createElement("p");
+  hint.className = "hint-text";
+  hint.textContent = "选择一个风格，即可看到推荐和弦进程。";
+  progressionResults.appendChild(hint);
+}
+
+function renderMoodProgressions(key) {
+  progressionResults.innerHTML = "";
+  if (!key || !moodProgressions[key]) {
+    showMoodHint();
+    return;
+  }
+
+  const mood = moodProgressions[key];
+  const title = document.createElement("h3");
+  title.textContent = mood.title;
+  progressionResults.appendChild(title);
+
+  const desc = document.createElement("p");
+  desc.textContent = mood.description;
+  progressionResults.appendChild(desc);
+
+  mood.progressions.forEach((progression) => {
+    progressionResults.appendChild(renderProgressionCard(progression));
+  });
 }
 
 function renderDiagram(shape, fingers) {
@@ -355,6 +497,10 @@ searchInput.addEventListener("input", () => {
   refreshDisplay();
 });
 
+moodSelect.addEventListener("change", () => {
+  renderMoodProgressions(moodSelect.value);
+});
+
 clearPinnedBtn.addEventListener("click", () => {
   if (confirm("确定要清除所有置顶和弦吗？")) {
     clearAllPinned();
@@ -363,3 +509,4 @@ clearPinnedBtn.addEventListener("click", () => {
 
 loadPinnedChords();
 refreshDisplay();
+renderMoodProgressions("");
